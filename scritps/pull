@@ -3,4 +3,4 @@ set -e
 
 # Pull changes in each git repository two levels down
 cd ~/repos
-find . -mindepth 2 -maxdepth 2 -type d -exec sh -c 'if [ -d "{}/.git" ]; then (cd {} && echo $PWD && git pull); fi' \;
+find . -mindepth 1 -maxdepth 2 -type d -exec sh -c 'if [ -d "{}/.git" ]; then (cd {} && echo $PWD && git pull); fi' \;
