@@ -2,10 +2,10 @@
 # wakeup will update repos, update brw and test e2e
 
 # Update repos
-./pull
+pull
 
 # update brew
-./brew-update
+brew-update
 
 # test e2e
-./e2e
+e2e
