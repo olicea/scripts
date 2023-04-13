@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+cd ~/repos/github
+# Loop through each subdirectory
+for dir in */; do
+  # Check if the directory is a git repository
+  if [ -d "$dir/.git" ]; then
+    # Get the current branch name
+    branch=$(cd "$dir" && git rev-parse --abbrev-ref HEAD)
+    # Print the branch name
+    echo "$dir: $branch"
+  fi
+done

@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+# if the codespace name was specified, use it
+if [ -n "$1" ]; then
+  name=$1
+else
+  # otherwise, create a new codespace
+  name=$(gh codespace create -b master -R github/github --devcontainer-path=.devcontainer/actions/devcontainer.json -m xLargePremiumLinux)
+fi
+echo "codespace_name=$name"
+
+gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test -i"' || exit_code=$?
+gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'
+gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test"'

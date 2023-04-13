@@ -1,0 +1,11 @@
+#!/bin/bash
+# wakeup will update repos, update brw and test e2e
+
+# Update repos
+./pull
+
+# update brew
+./brew-update
+
+# test e2e
+./e2e
