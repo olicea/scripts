@@ -10,6 +10,12 @@ else
 fi
 echo "codespace_name=$name"
 
-gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test -i"' || exit_code=$?
-gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'
-gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test"'
+gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test -i -t"' || exit_code=$?
+
+# if exit_code is failure then run this
+if [ "$exit_code" -eq 1 ]; then
+  gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "actions-health-check"'
+fi  
+
+# gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'
+# gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test"'
