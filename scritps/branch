@@ -8,7 +8,13 @@ for dir in */; do
   if [ -d "$dir/.git" ]; then
     # Get the current branch name
     branch=$(cd "$dir" && git rev-parse --abbrev-ref HEAD)
-    # Print the branch name
-    echo "$dir: $branch"
+    #changes=$(cd "$dir" && git status --porcelain)
+
+    # Check if the branch is "main" or "master"
+    if [[ "$branch" == "main" || "$branch" == "master" ]]; then
+      echo -e "$dir: \033[32m$branch\033[0m"
+    else
+      echo -e "$dir: \033[31m$branch\033[0m"
+    fi
   fi
 done
