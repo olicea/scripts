@@ -15,6 +15,12 @@ gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/wo
 # if exit_code is failure then run this
 if [ "$exit_code" ]; then
   gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "actions-health-check"'
+
+  echo "First test attempt failed, retrying..."
+  echo "Running start-actions..."
+  gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'
+  echo "Running test..."
+  gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test"'
 fi  
 
 # gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'

@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# if the codespace name was specified, use it
+if [ -n "$1" ]; then
+  name=$1
+else
+  # otherwise, create a new codespace
+  name=$(gh codespace create -b master -R github/github --devcontainer-path=.devcontainer/actions-vnext/devcontainer.json -m xLargePremiumLinux)
+fi
+echo "codespace_name=$name"
+
+# run script/server --scenario actions-codespaces-vnext -v
+gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && bash -lc "/workspaces/actions/actions-codespaces/script/server --scenario actions-codespaces-vnext -v"' || exit_code=$?
+
+if [[ $exit_code -eq 0 ]]; then
+  echo "Running test..."
+  gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && bash -lc "/workspaces/actions/actions-codespaces-test/test --telemetry"' || exit_code=$?
+fi
+
+# if exit_code is failure then run this
+if [ "$exit_code" ]; then
+  gh codespace ssh -c "$name" -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions-health-check"'
+fi  
+
+# gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/start-actions"'
+# gh codespace ssh -c $name -- 'cd /workspaces/github/ && export GITHUB_PATH=/workspaces/github && bash -lc "script/actions/test"'
