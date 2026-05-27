@@ -1,0 +1,63 @@
+#!/bin/bash
+set -e
+
+# Install Homebrew if missing
+if ! command -v brew &>/dev/null; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Install iTerm2
+if ! brew list --cask iterm2 &>/dev/null; then
+  brew install --cask iterm2
+fi
+
+# Backup existing .zshrc
+[ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.backup
+
+# Install Oh My Zsh
+if [ ! -d ~/.oh-my-zsh ]; then
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# Install Powerlevel10k theme
+if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+    "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+fi
+
+# Install plugins
+if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+fi
+
+if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+    "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+fi
+
+if ! brew list autojump &>/dev/null; then
+  brew install autojump
+fi
+
+# Write .zshrc
+cat > ~/.zshrc << 'EOF'
+export ZSH="$HOME/.oh-my-zsh"
+
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+plugins=(
+    git
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    autojump
+)
+
+source $ZSH/oh-my-zsh.sh
+
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+EOF
+
+echo "Done. Open iTerm2 and run: source ~/.zshrc"
+echo "The Powerlevel10k wizard will launch — follow the prompts."
+echo "To reconfigure later, run: p10k configure"
